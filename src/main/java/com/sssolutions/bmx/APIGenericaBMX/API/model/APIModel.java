@@ -1,4 +1,4 @@
-package com.sssolutions.bmx.APIGenericaBMX.model;
+package com.sssolutions.bmx.APIGenericaBMX.API.model;
 
 public class APIModel {
 	

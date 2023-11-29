@@ -9,12 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.enums.GenericErrorsDAO;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.IExampleService;
 import com.sssolutions.bmx.APIGenericaBMX.dao.AddUserExampleDAO;
 import com.sssolutions.bmx.APIGenericaBMX.dto.DAOResponseDTO;
 import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 
 @Service

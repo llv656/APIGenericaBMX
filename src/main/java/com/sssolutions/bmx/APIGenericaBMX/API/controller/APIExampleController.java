@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.ICredentialsService;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.IExampleService;
 import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.utils.APIService;
 import com.sssolutions.bmx.APIGenericaBMX.utils.ResponseService;
 
@@ -67,7 +67,7 @@ public class APIExampleController {
 		LOGGER.info("\tConfiguración de propiedades de solicitud");
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
-		LOGGER.info("\tEmpieza servicio recuperar credenciales BD");
+		LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
 		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
 		
 		if (responseDTO.isExitoso()) {

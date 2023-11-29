@@ -2,9 +2,9 @@ package com.sssolutions.bmx.APIGenericaBMX.API.service;
 
 import java.util.Map;
 
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
 
 public interface IExampleService {
 

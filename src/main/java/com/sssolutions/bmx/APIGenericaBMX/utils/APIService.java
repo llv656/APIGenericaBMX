@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.config.PropertyConfig;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 
 @Service

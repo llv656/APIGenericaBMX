@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.utils.APIService;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 

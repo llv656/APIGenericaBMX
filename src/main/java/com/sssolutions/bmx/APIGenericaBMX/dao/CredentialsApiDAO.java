@@ -10,11 +10,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.WebAppCredentialsModel;
 import com.sssolutions.bmx.APIGenericaBMX.dao.service.IDAOUtilsService;
 import com.sssolutions.bmx.APIGenericaBMX.dao.service.IWebCredentialsDAOService;
 import com.sssolutions.bmx.APIGenericaBMX.dto.DAOResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.model.WebAppCredentialsModel;
 
 @Repository
 public class CredentialsApiDAO {

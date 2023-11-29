@@ -10,12 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.enums.GenericErrorsDAO;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.WebAppCredentialsModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.ICredentialsService;
 import com.sssolutions.bmx.APIGenericaBMX.dao.CredentialsApiDAO;
 import com.sssolutions.bmx.APIGenericaBMX.dto.DAOResponseDTO;
 import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.model.WebAppCredentialsModel;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 
 @Service

@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.enums.GenericErrorsDAO;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.config.PropertyConfig;
 import com.sssolutions.bmx.APIGenericaBMX.dao.service.IWebCredentialsDAOService;
 import com.sssolutions.bmx.APIGenericaBMX.dao.utils.SQLUtilsService;
 import com.sssolutions.bmx.APIGenericaBMX.dto.DAOResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 import com.sssolutions.bmx.CryptoBMX.CryptoBMX;
 
