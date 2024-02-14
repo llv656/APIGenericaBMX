@@ -1,22 +1,21 @@
 package com.sssolutions.bmx.APIGenericaBMX.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
+
+import lombok.AllArgsConstructor;
+
+@Component
+@AllArgsConstructor
 public class RestBMXTemplateService {
 
-	@Autowired
 	private RestTemplate restTemplate;
-	
-	public RestBMXTemplateService(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T executeRequest(String apiUrl, HttpHeaders headers, String requestBody,

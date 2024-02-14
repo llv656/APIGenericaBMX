@@ -2,14 +2,15 @@ package com.sssolutions.bmx.APIGenericaBMX.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
+
+import com.sssolutions.bmx.CryptoBMX.CryptoBMX;
 
 @Configuration
-public class RestTemplateConfig {
+public class CryptoSecurityConfig {
 
 	@Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	CryptoBMX getCryptoBMX() {
+		return new CryptoBMX(); 
+	}
 	
 }

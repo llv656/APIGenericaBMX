@@ -1,13 +1,12 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.controller;
 
 import java.util.Map;
-import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +22,18 @@ import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.ICredentialsService;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.IExampleService;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseServiceDTO;
 import com.sssolutions.bmx.APIGenericaBMX.utils.APIService;
+import com.sssolutions.bmx.APIGenericaBMX.utils.UtilsService;
 import com.sssolutions.bmx.APIGenericaBMX.utils.ResponseService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("user_example")
+@AllArgsConstructor
 public class APIExampleController {
 
 	private static final Logger LOGGER = LogManager.getLogger(APIExampleController.class);
@@ -39,52 +42,45 @@ public class APIExampleController {
 	private HttpServletRequest request;
 	private ICredentialsService credentialsService;
 	private IExampleService exampleService;
-	private Function<ResponseDTO, Map<String, String>> transformResultAtDataSource;
-	
-	@Autowired
-    public APIExampleController(
-            ResponseService responseService,
-            APIService apiService,
-            HttpServletRequest request,
-            ICredentialsService credentialsService,
-            IExampleService exampleService
-    ) {
-        this.responseService = responseService;
-        this.apiService = apiService;
-        this.request = request;
-        this.credentialsService = credentialsService;
-        this.exampleService = exampleService;
-
-        this.transformResultAtDataSource = a -> (Map<String, String>) a.getResultado();
-    }
+	private UtilsService utilsService;
 
 	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public Object addUserController(@RequestHeader Map<String, String> headers, 
-			@RequestBody RequestAddUserExampleModel body) {
+	public Object addUserController(
+			@RequestHeader Map<String, String> headers, 
+			@RequestBody @Valid RequestAddUserExampleModel body, 
+			Errors errors
+	) {
+		
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		LOGGER.info("**Empieza solicitud ".concat(method));
+		
+		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
 		
 		LOGGER.info("\tConfiguración de propiedades de solicitud");
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
-		LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
-		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
-		
-		if (responseDTO.isExitoso()) {
-			LOGGER.info("\tEmpieza servicio agregar usuario");
-			responseDTO = exampleService.executeAddUserService(this.transformResultAtDataSource.apply(responseDTO), propertiesRequest, body);
+		if (errors.hasErrors()) {
+			responseDTO = utilsService.transformErrorsAtResponseService.apply(errors);
+		} else {
+			LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
+			responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+			
+			if (responseDTO.isValid()) {
+				LOGGER.info("\tEmpieza servicio agregar usuario");
+				responseDTO = exampleService.executeAddUserService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO), body);
+			}
 		}
 	
 		LOGGER.info("\tConstrucción de respuesta");
-		Object response = responseDTO.isExitoso()
+		Object response = responseDTO.isValid()
 				? responseService.buildResponseOK(
-						propertiesRequest.getFolio(), responseDTO.getMensaje())
+						propertiesRequest.getFolio(), responseDTO.getMessage())
 				: responseService.buildResponseError(
-						responseDTO.getEstatus().toString(), propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
-		return new ResponseEntity<Object>(response,responseDTO.getEstatus());	
+		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
 	@GetMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -96,51 +92,56 @@ public class APIExampleController {
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
 		LOGGER.info("\tEmpieza servicio recuperar credenciales BD");
-		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		ResponseServiceDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
 		
-		if (responseDTO.isExitoso()) {
+		if (responseDTO.isValid()) {
 			LOGGER.info("\tEmpieza servicio recuperar usuario");
-			responseDTO = exampleService.executeGetUsersService(this.transformResultAtDataSource.apply(responseDTO), propertiesRequest);
+			responseDTO = exampleService.executeGetUsersService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO));
 		}
 	
 		LOGGER.info("\tConstrucción de respuesta");
-		Object response = responseDTO.isExitoso()
-				? responseService.buildResponseOKwhitData(
-						propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getResultado())
+		Object response = responseDTO.isValid()
+				? responseService.buildResponseOkWhitData(
+						propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getResult())
 				: responseService.buildResponseError(
-						responseDTO.getEstatus().toString(), propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
-		return new ResponseEntity<Object>(response,responseDTO.getEstatus());	
+		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
-	@GetMapping(value = {"/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public Object getUserController(@RequestHeader Map<String, String> headers, @PathVariable int idUser) {
+	@GetMapping(value = {"/{userId}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+	public Object getUserController(
+			@RequestHeader Map<String, String> headers, 
+			@PathVariable Integer userId
+			) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		LOGGER.info("**Empieza solicitud ".concat(method));
+		
+		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
 		
 		LOGGER.info("\tConfiguración de propiedades de solicitud");
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
-		LOGGER.info("\tEmpieza servicio recuperar credenciales BD");
-		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
+		responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
 		
-		if (responseDTO.isExitoso()) {
-			LOGGER.info("\tEmpieza servicio obteber usuario");
-			responseDTO = exampleService.executeGetUserByIdService(this.transformResultAtDataSource.apply(responseDTO), propertiesRequest, idUser);
+		if (responseDTO.isValid()) {
+			LOGGER.info("\tEmpieza servicio agregar usuario");
+			responseDTO = exampleService.executeGetUserByIdService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO), userId);
 		}
-		
+	
 		LOGGER.info("\tConstrucción de respuesta");
-		Object response = responseDTO.isExitoso()
-				? responseService.buildResponseOKwhitData(
-						propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getResultado())
+		Object response = responseDTO.isValid()
+				? responseService.buildResponseOkWhitData(
+						propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getResult())
 				: responseService.buildResponseError(
-						responseDTO.getEstatus().toString(), propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
-		return new ResponseEntity<Object>(response,responseDTO.getEstatus());	
+		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
 	@PutMapping(value = {"/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -153,23 +154,23 @@ public class APIExampleController {
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
 		LOGGER.info("\tEmpieza servicio recuperar credenciales BD");
-		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		ResponseServiceDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
 		
-		if (responseDTO.isExitoso()) {
+		if (responseDTO.isValid()) {
 			LOGGER.info("\tEmpieza servicio actualizar usuario");
-			responseDTO = exampleService.executeUpdateUserByIdService(this.transformResultAtDataSource.apply(responseDTO), propertiesRequest, body, idUser);
+			responseDTO = exampleService.executeUpdateUserByIdService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO), body, idUser);
 		}
 		
 		LOGGER.info("\tConstrucción de respuesta");
-		Object response = responseDTO.isExitoso()
-				? responseService.buildResponseOKwhitData(
-						propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getResultado())
+		Object response = responseDTO.isValid()
+				? responseService.buildResponseOkWhitData(
+						propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getResult())
 				: responseService.buildResponseError(
-						responseDTO.getEstatus().toString(), propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
-		return new ResponseEntity<Object>(response,responseDTO.getEstatus());	
+		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
 	@PutMapping(value = {"/tipo_usuario/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -182,22 +183,22 @@ public class APIExampleController {
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
 		LOGGER.info("\tEmpieza servicio recuperar credenciales BD");
-		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		ResponseServiceDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
 		
-		if (responseDTO.isExitoso()) {
+		if (responseDTO.isValid()) {
 			LOGGER.info("\tEmpieza servicio actualizar tipo usuario");
-			responseDTO = exampleService.executeUpdateTypeUserByIdService(this.transformResultAtDataSource.apply(responseDTO), propertiesRequest, typeUser, idUser);
+			responseDTO = exampleService.executeUpdateTypeUserByIdService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO), typeUser, idUser);
 		}
 		LOGGER.info("\tConstrucción de respuesta");
-		Object response = responseDTO.isExitoso()
+		Object response = responseDTO.isValid()
 				? responseService.buildResponseOK(
-						propertiesRequest.getFolio(), responseDTO.getMensaje())
+						propertiesRequest.getFolio(), responseDTO.getMessage())
 				: responseService.buildResponseError(
-						responseDTO.getEstatus().toString(), propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
-		return new ResponseEntity<Object>(response,responseDTO.getEstatus());	
+		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
 	@DeleteMapping(value = {"/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -209,23 +210,23 @@ public class APIExampleController {
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
 		LOGGER.info("\tEmpieza servicio recuperar credenciales BD");
-		ResponseDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		ResponseServiceDTO responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
 		
-		if (responseDTO.isExitoso()) {
+		if (responseDTO.isValid()) {
 			LOGGER.info("\tEmpieza servicio eliminar usuario");
-			responseDTO = exampleService.executeDeleteUserByIdService(this.transformResultAtDataSource.apply(responseDTO), propertiesRequest, idUser);
+			responseDTO = exampleService.executeDeleteUserByIdService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO), idUser);
 		}
 		
 		LOGGER.info("\tConstrucción de respuesta");
-		Object response = responseDTO.isExitoso()
+		Object response = responseDTO.isValid()
 				? responseService.buildResponseDelete(
-						propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles())
+						propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails())
 				: responseService.buildResponseError(
-						responseDTO.getEstatus().toString(), propertiesRequest.getFolio(), responseDTO.getMensaje(), responseDTO.getDetalles());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
-		return new ResponseEntity<Object>(response,responseDTO.getEstatus());	
+		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
 }

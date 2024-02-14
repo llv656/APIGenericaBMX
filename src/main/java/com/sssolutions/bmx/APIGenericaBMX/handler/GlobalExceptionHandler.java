@@ -1,18 +1,19 @@
 package com.sssolutions.bmx.APIGenericaBMX.handler;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.format.DateTimeParseException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.utils.APIService;
+import com.sssolutions.bmx.APIGenericaBMX.utils.ResponseService;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,27 +24,33 @@ public class GlobalExceptionHandler {
 
 	private static final Logger LOGGER = LogManager.getLogger(GlobalExceptionHandler.class);
 	private APIService apiService;
+	private ResponseService responseService;
 	
-	@Autowired
-	public GlobalExceptionHandler(APIService apiService) {
+	public GlobalExceptionHandler(APIService apiService, ResponseService responseService) {
 		this.apiService = apiService;
+		this.responseService = responseService;
 	}
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> exceptionHandler(Exception ex, HttpServletRequest request, HttpServletResponse response) {
 		LOGGER.info("**exceptionHandler");
+		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		LOGGER.error(ex.getMessage());
-		LOGGER.error(ex.toString());
+		APIModel apiModel = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
-		Map<String, String> serverErrorResponse = new HashMap<String, String>();
-		APIModel apiModel = apiService.getpropertiesRequest(request.getRemoteAddr(), this.getClass().getEnclosingMethod().getName());
+		if (ex.getCause() instanceof InvalidFormatException &&
+				ex.getCause().getCause() instanceof DateTimeParseException) {
+	        Object responseErrorTDateTime = responseService.buildResponseError("400", apiModel.getFolio(), Messages.ERROR_FORMAT_DATE_TIME, null);
+	        return new ResponseEntity<>(responseErrorTDateTime, HttpStatus.BAD_REQUEST);
+		}
 		
-		serverErrorResponse.put("folio", apiModel.getFolio());
-		serverErrorResponse.put("Error", Messages.SERVER_ERROR_001);
-		
-		return new ResponseEntity<Object>(serverErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-		
+		if(ex instanceof HttpMessageNotReadableException) {
+			Object responseErrorFormat = responseService.buildResponseError("400", apiModel.getFolio(), Messages.ERROR_FORMAT_JSON, null);
+	        return new ResponseEntity<>(responseErrorFormat, HttpStatus.BAD_REQUEST);
+		}
+
+		Object responseError = responseService.buildResponseError("500", apiModel.getFolio(), Messages.SERVER_ERROR_001, null);
+		return new ResponseEntity<Object>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

@@ -7,6 +7,9 @@ public final class Messages {
 	public final static String ERROR_001 = "Operación inválida";
 	public final static String ERROR_CONNECTION_BD_001 = "Ocurrio un error con la conexión al servidor de BD";
 	
+	public final static String ERROR_FORMAT_DATE_TIME = "El formato fecha/hora es inválido";
+	public final static String ERROR_FORMAT_JSON = "El formato del objeto de solicitud es inválido";
+	
 	public final static String SERVER_ERROR_001 = "Hubo un problema en el servidor, por favor contacte al administrador";
 	
 }
