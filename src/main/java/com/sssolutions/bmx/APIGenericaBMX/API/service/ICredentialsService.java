@@ -3,10 +3,10 @@ package com.sssolutions.bmx.APIGenericaBMX.API.service;
 import java.util.Map;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseServiceDTO;
 
 public interface ICredentialsService {
 	
-	ResponseDTO executeGetDataSourceWebApp(Map<String,String> headers, APIModel propertiesRequest);
+	ResponseServiceDTO executeGetDataSourceWebApp(Map<String,String> headers, APIModel propertiesRequest);
 
 }

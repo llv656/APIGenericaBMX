@@ -5,12 +5,12 @@ import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
+import com.sssolutions.bmx.RepositoryBMX.DaoBMX;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 public class DataSourceConfig {
@@ -20,16 +20,22 @@ public class DataSourceConfig {
 	@Autowired
 	private PropertyConfig property;
 
-    @Bean(name = "dsSSS")
-    @Primary
+	@Bean(name = "dsSSS")
     DataSource getDataSource() {
         LOGGER.info("Inicia DataSource");
-        DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName(property.getPropertyString(Properties.JDBC_DRIVER));
-        dataSourceBuilder.url(property.getPropertyString(Properties.JDBC_URL).concat(property.getPropertyString(Properties.JDBC_DATABASE)));
-        dataSourceBuilder.username(property.getPropertyString(Properties.JDBC_USERNAME));
-        dataSourceBuilder.password(property.getPropertyString(Properties.JDBC_PASSWORD));
-        return dataSourceBuilder.build();
+        HikariDataSource dataSource= new HikariDataSource();
+        dataSource.setDriverClassName(property.getPropertyString(Properties.JDBC_DRIVER));
+        dataSource.setJdbcUrl(property.getPropertyString(Properties.JDBC_URL).concat(property.getPropertyString(Properties.JDBC_DATABASE)));
+        dataSource.setUsername(property.getPropertyString(Properties.JDBC_USERNAME));
+        dataSource.setPassword(property.getPropertyString(Properties.JDBC_PASSWORD));
+        dataSource.setMaximumPoolSize(15);
+        dataSource.setMinimumIdle(5);
+        return dataSource;
     }
+	
+	@Bean
+	DaoBMX getDaoBMX() {
+		return new DaoBMX();
+	}
 	
 }

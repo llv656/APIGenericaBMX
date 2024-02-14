@@ -1,29 +1,29 @@
 package com.sssolutions.bmx.APIGenericaBMX.utils;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDeleteDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseErrorDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseOKwhitDataDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseOkDTO;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIDeleteDTO;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIErrorDTO;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIOkWhitDataDTO;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIOkDTO;
 
-@Service
+@Component
 public class ResponseService{
 	
-	public ResponseOkDTO buildResponseOK(String folio, String mensaje) {
-		return new ResponseOkDTO(folio, mensaje);
+	public ResponseAPIOkDTO buildResponseOK(String folio, String mensaje) {
+		return new ResponseAPIOkDTO(folio, mensaje);
 	}
 	
-	public ResponseOKwhitDataDTO buildResponseOKwhitData(String folio, String mensaje, Object result) {
-		return new ResponseOKwhitDataDTO(folio, mensaje, result);
+	public ResponseAPIOkWhitDataDTO buildResponseOkWhitData(String folio, String mensaje, Object result) {
+		return new ResponseAPIOkWhitDataDTO(folio, mensaje, result);
 	}
 	
-	public ResponseDeleteDTO buildResponseDelete(String folio, String mensaje, String[] detalles) {
-		return new ResponseDeleteDTO(folio, mensaje, detalles);
+	public ResponseAPIDeleteDTO buildResponseDelete(String folio, String mensaje, String[] detalles) {
+		return new ResponseAPIDeleteDTO(folio, mensaje, detalles);
 	}
 	
-	public ResponseErrorDTO buildResponseError(String codigoError, String folio, String mensaje, String[] detalles) {
-		return new ResponseErrorDTO(codigoError, folio, mensaje, detalles);
+	public ResponseAPIErrorDTO buildResponseError(String codigoError, String folio, String mensaje, String[] detalles) {
+		return new ResponseAPIErrorDTO(codigoError, folio, mensaje, detalles);
 	}
 	
 }

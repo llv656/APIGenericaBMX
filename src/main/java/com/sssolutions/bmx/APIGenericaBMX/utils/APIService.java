@@ -1,24 +1,27 @@
 package com.sssolutions.bmx.APIGenericaBMX.utils;
 
 import java.net.InetAddress;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
+import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
 import com.sssolutions.bmx.APIGenericaBMX.config.PropertyConfig;
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 
-@Service
+import lombok.AllArgsConstructor;
+
+@Component
+@AllArgsConstructor
 public class APIService{
 	private static final Logger LOGGER = LogManager.getLogger(APIService.class);
 	
-	@Autowired
 	private PropertyConfig property;
 	
 	public APIModel getpropertiesRequest (String IPAddrees, String endpoint) {
@@ -51,33 +54,21 @@ public class APIService{
 		
 		int servicioId = 0;
 		
-		try { 
+		try {
 			switch (endpoint) {
-				case "addUserController":
-					servicioId = property.getPropertyInteger(Properties.ENDPOINT_ADD_USER);
-					break;
-				case "getUsersController":
-					servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USERS);
-					break;
-				case "getUserController":
-					servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USER);
-					break;
-				case "updateUserController":
-					servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_USER);
-					break;
-				case "updateTypeUserController":
-					servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_TYPE_USER);
-					break;
-				case "deleteUserController":
-					servicioId = property.getPropertyInteger(Properties.ENDPOINT_DELETE_USER);
-					break;
-			}
-			
+				case "addUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_ADD_USER);
+				case "getUsersController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USERS);
+				case "getUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USER);
+				case "updateUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_USER);
+				case "updateTypeUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_TYPE_USER);
+				case "deleteUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_DELETE_USER);
+			};
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
-		
+
 		return servicioId;
+		
 	}
 	
 	private String getRandomNumber() {
@@ -86,17 +77,13 @@ public class APIService{
 	}
 	
 	private String getDate() {
-		String eventDate = "";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		eventDate = simpleDateFormat.format(new Date());
-		return eventDate;
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+		return dateFormat.format(LocalDateTime.now());
 	}
 	
 	private String getDateSerie() {
-		String date = "";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		date = simpleDateFormat.format(new Date());
-		return date;
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+		return dateFormat.format(LocalDateTime.now());
 	}
 	
 }

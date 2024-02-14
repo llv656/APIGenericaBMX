@@ -4,92 +4,114 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.sssolutions.bmx.APIGenericaBMX.API.enums.GenericErrorsDAO;
-import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.IExampleService;
-import com.sssolutions.bmx.APIGenericaBMX.dao.AddUserExampleDAO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.DAOResponseDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseDTO;
+import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
+import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseServiceDTO;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
+import com.sssolutions.bmx.RepositoryBMX.enums.DAOStatus;
+import com.sssolutions.bmx.RepositoryBMX.pojo.ResponseDaoDTO;
+
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class ExampleServiceImpl implements IExampleService{
 	
 	private static final Logger LOGGER = LogManager.getLogger(ExampleServiceImpl.class);
-	private AddUserExampleDAO addUserExampleDAO;
-
-	@Autowired
-	public ExampleServiceImpl(
-		AddUserExampleDAO addUserExampleDAO
-	) {
-		this.addUserExampleDAO = addUserExampleDAO;
-	}
+	private IUserExampleRepository userExampleDAO;
 
 	@Override
-	public ResponseDTO executeAddUserService(Map<String, String> responseCredentialsDAO, APIModel propertiesRequest,
+	public ResponseServiceDTO executeAddUserService(
+			Map<String, String> responseCredentialsDAO,
 			RequestAddUserExampleModel body) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		LOGGER.info("\t\tMethod:".concat(method));
 		
-		ResponseDTO responseDTO = new ResponseDTO();
+		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
 		
-		/* Agregar validaciones y sanitización de campos */
+		LOGGER.info("\t\tEmpieza sanitización de campos");
+		body.sanitizeFields();
 		
 		LOGGER.info("\t\tRegistro de usuario");
-		DAOResponseDTO responseDAO = addUserExampleDAO.addClientRepository(body, responseCredentialsDAO);
+		ResponseDaoDTO responseDAO = userExampleDAO.addClient(body, responseCredentialsDAO);
 		
 		LOGGER.info("\t\tConstrucción de respuesta del servicio");
 		if (responseDAO.isValid()) {
-			responseDTO.setMensaje(Messages.OK_001);
-			responseDTO.setEstatus(HttpStatus.CREATED);
-		} else if (!responseDAO.isValid() && responseDAO.getGenericError() == GenericErrorsDAO.execution) {
-			responseDTO.setMensaje(Messages.ERROR_001);
-			responseDTO.setDetalles(responseDAO.getMessage());
-			responseDTO.setEstatus(HttpStatus.BAD_REQUEST);
-		} else if (!responseDAO.isValid() && responseDAO.getGenericError() == GenericErrorsDAO.connection) {
-			responseDTO.setMensaje(Messages.ERROR_CONNECTION_BD_001);
-			responseDTO.setDetalles(responseDAO.getMessage());
-			responseDTO.setEstatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			responseDTO.setMessage(Messages.OK_001);
+			responseDTO.setHttpStatus(HttpStatus.CREATED);
+		} else if (!responseDAO.isValid() && responseDAO.getGenericDao() == DAOStatus.err_execution) {
+			responseDTO.setMessage(Messages.ERROR_001);
+			responseDTO.setDetails(responseDAO.getMessage());
+			responseDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+		} else if (!responseDAO.isValid() && responseDAO.getGenericDao() == DAOStatus.err_connection) {
+			responseDTO.setMessage(Messages.ERROR_CONNECTION_BD_001);
+			responseDTO.setDetails(responseDAO.getMessage());
+			responseDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		responseDTO.setExitoso(responseDAO.isValid());
+		responseDTO.setValid(responseDAO.isValid());
 		
 		return responseDTO;
 	}
 
 	@Override
-	public ResponseDTO executeGetUsersService(Map<String, String> headers, APIModel propertiesRequest) {
+	public ResponseServiceDTO executeGetUsersService(Map<String, String> headers) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseDTO executeGetUserByIdService(Map<String, String> headers, APIModel propertiesRequest, int id) {
+	public ResponseServiceDTO executeGetUserByIdService(
+			Map<String, String> responseCredentialsDAO,
+			Integer id) {
+		
+		String method = new Object(){}.getClass().getEnclosingMethod().getName();
+		LOGGER.info("\t\tMethod:".concat(method));
+		
+		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
+		
+		LOGGER.info("\t\tObtener usuario");
+		ResponseDaoDTO responseDAO = userExampleDAO.getClient(id, responseCredentialsDAO);
+		
+		LOGGER.info("\t\tConstrucción de respuesta del servicio");
+		if (responseDAO.isValid()) {
+			responseDTO.setMessage(Messages.OK_001);
+			responseDTO.setResult(responseDAO.getResult());
+			responseDTO.setHttpStatus(HttpStatus.OK);
+		} else if (!responseDAO.isValid() && responseDAO.getGenericDao() == DAOStatus.err_execution) {
+			responseDTO.setMessage(Messages.ERROR_001);
+			responseDTO.setDetails(responseDAO.getMessage());
+			responseDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+		} else if (!responseDAO.isValid() && responseDAO.getGenericDao() == DAOStatus.err_connection) {
+			responseDTO.setMessage(Messages.ERROR_CONNECTION_BD_001);
+			responseDTO.setDetails(responseDAO.getMessage());
+			responseDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		responseDTO.setValid(responseDAO.isValid());
+		
+		return responseDTO;
+	}
+
+	@Override
+	public ResponseServiceDTO executeUpdateUserByIdService(Map<String, String> headers, RequestAddUserExampleModel body, int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseDTO executeUpdateUserByIdService(Map<String, String> headers, APIModel propertiesRequest,
-			RequestAddUserExampleModel body, int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResponseDTO executeUpdateTypeUserByIdService(Map<String, String> headers, APIModel propertiesRequest, int userType,
+	public ResponseServiceDTO executeUpdateTypeUserByIdService(Map<String, String> headers, int userType,
 			int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseDTO executeDeleteUserByIdService(Map<String, String> headers, APIModel propertiesRequest, int id) {
+	public ResponseServiceDTO executeDeleteUserByIdService(Map<String, String> headers, int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
