@@ -17,7 +17,7 @@ public class UtilsService {
 	
 	public final Function<ResponseServiceDTO, Map<String, String>> transformResponseAtDataSourceMap = e -> (Map<String, String>) e.getResult();
 	
-	public final Function<Errors, ResponseServiceDTO> transformErrorsAtResponseService = e -> {
+	public final Function<Errors, ResponseServiceDTO> transformErrorsAtServiceResponse = e -> {
 		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
     	String camposError = e.getFieldErrors()
 				.stream()

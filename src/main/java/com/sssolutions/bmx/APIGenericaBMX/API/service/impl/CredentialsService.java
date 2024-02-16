@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
@@ -34,7 +36,8 @@ public class CredentialsService implements ICredentialsService {
 	private CryptoBMX cryptoSecurity;
 
 	@Override
-	public ResponseServiceDTO executeGetDataSourceWebApp(Map<String, String> headers, APIModel propertiesRequest) {
+	@Async
+	public CompletableFuture<ResponseServiceDTO> executeGetDataSourceWebApp(Map<String, String> headers, APIModel propertiesRequest) {
 		LOGGER.info("\t\tMethod:".concat(new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
@@ -84,7 +87,7 @@ public class CredentialsService implements ICredentialsService {
 			responseDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
 		}
 		
-		return responseDTO;
+		return CompletableFuture.completedFuture(responseDTO);
 	}
 
 }

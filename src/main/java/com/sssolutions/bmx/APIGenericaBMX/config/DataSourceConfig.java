@@ -7,12 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 import com.sssolutions.bmx.RepositoryBMX.DaoBMX;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
+@EnableAsync
 public class DataSourceConfig {
 	
 	private static final Logger LOGGER = LogManager.getLogger(DataSourceConfig.class);

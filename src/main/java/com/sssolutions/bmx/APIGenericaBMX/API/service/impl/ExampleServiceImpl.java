@@ -1,6 +1,7 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.service.impl;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +27,7 @@ public class ExampleServiceImpl implements IExampleService{
 
 	@Override
 	public ResponseServiceDTO executeAddUserService(
-			Map<String, String> responseCredentialsDAO,
+			CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO,
 			RequestAddUserExampleModel body) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		LOGGER.info("\t\tMethod:".concat(method));
@@ -37,7 +38,7 @@ public class ExampleServiceImpl implements IExampleService{
 		body.sanitizeFields();
 		
 		LOGGER.info("\t\tRegistro de usuario");
-		ResponseDaoDTO responseDAO = userExampleDAO.addClient(body, responseCredentialsDAO);
+		ResponseDaoDTO responseDAO = userExampleDAO.addClient(body, credentiaslAsyncResponseDAO);
 		
 		LOGGER.info("\t\tConstrucción de respuesta del servicio");
 		if (responseDAO.isValid()) {

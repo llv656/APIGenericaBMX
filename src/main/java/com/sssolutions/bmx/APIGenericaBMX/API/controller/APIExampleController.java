@@ -1,6 +1,7 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.controller;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,16 +60,17 @@ public class APIExampleController {
 		LOGGER.info("\tConfiguración de propiedades de solicitud");
 		APIModel propertiesRequest = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
+		LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
+		CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponse = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		
 		if (errors.hasErrors()) {
-			responseDTO = utilsService.transformErrorsAtResponseService.apply(errors);
+			responseDTO = utilsService.transformErrorsAtServiceResponse.apply(errors);
 		} else {
-			LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
-			responseDTO = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
-			
-			if (responseDTO.isValid()) {
-				LOGGER.info("\tEmpieza servicio agregar usuario");
-				responseDTO = exampleService.executeAddUserService(utilsService.transformResponseAtDataSourceMap.apply(responseDTO), body);
-			}
+			//if (responseDTO.isValid()) {
+			LOGGER.info("\tEmpieza servicio agregar usuario");
+			responseDTO = exampleService.executeAddUserService(credentiaslAsyncResponse, body);
+			utilsService.transformResponseAtDataSourceMap.apply(responseDTO);
+			//}
 		}
 	
 		LOGGER.info("\tConstrucción de respuesta");
@@ -83,7 +85,7 @@ public class APIExampleController {
 		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
 	}
 	
-	@GetMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+	/*@GetMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public Object getUsersController(@RequestHeader Map<String, String> headers) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		LOGGER.info("**Empieza solicitud ".concat(method));
@@ -227,6 +229,6 @@ public class APIExampleController {
 		LOGGER.info("**Termina solicitud ".concat(method));
 		
 		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());	
-	}
+	}*/
 	
 }
