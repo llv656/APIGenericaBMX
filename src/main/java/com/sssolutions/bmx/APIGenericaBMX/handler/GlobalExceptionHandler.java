@@ -1,6 +1,7 @@
 package com.sssolutions.bmx.APIGenericaBMX.handler;
 
 import java.time.format.DateTimeParseException;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,9 +12,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.APIService;
+import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.ResponseService;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.utils.APIService;
-import com.sssolutions.bmx.APIGenericaBMX.utils.ResponseService;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,20 +37,20 @@ public class GlobalExceptionHandler {
 		LOGGER.info("**exceptionHandler");
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		APIModel apiModel = apiService.getpropertiesRequest(request.getRemoteAddr(), method);
+		CompletableFuture<APIModel> apiModel= apiService.getpropertiesRequest(request.getRemoteAddr(), method);
 		
 		if (ex.getCause() instanceof InvalidFormatException &&
 				ex.getCause().getCause() instanceof DateTimeParseException) {
-	        Object responseErrorTDateTime = responseService.buildResponseError("400", apiModel.getFolio(), Messages.ERROR_FORMAT_DATE_TIME, null);
+	        Object responseErrorTDateTime = responseService.buildResponseError("400", apiModel.join().getFolio(), Messages.ERROR_FORMAT_DATE_TIME, null);
 	        return new ResponseEntity<>(responseErrorTDateTime, HttpStatus.BAD_REQUEST);
 		}
 		
 		if(ex instanceof HttpMessageNotReadableException) {
-			Object responseErrorFormat = responseService.buildResponseError("400", apiModel.getFolio(), Messages.ERROR_FORMAT_JSON, null);
+			Object responseErrorFormat = responseService.buildResponseError("400", apiModel.join().getFolio(), Messages.ERROR_FORMAT_JSON, null);
 	        return new ResponseEntity<>(responseErrorFormat, HttpStatus.BAD_REQUEST);
 		}
 
-		Object responseError = responseService.buildResponseError("500", apiModel.getFolio(), Messages.SERVER_ERROR_001, null);
+		Object responseError = responseService.buildResponseError("500", apiModel.join().getFolio(), Messages.SERVER_ERROR_001, null);
 		return new ResponseEntity<Object>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

@@ -1,4 +1,4 @@
-package com.sssolutions.bmx.APIGenericaBMX.utils;
+package com.sssolutions.bmx.APIGenericaBMX.API.service.utils;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
