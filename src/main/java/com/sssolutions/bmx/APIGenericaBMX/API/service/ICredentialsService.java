@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseServiceDTO;
+import com.sssolutions.bmx.dto.ResponseServiceDTO;
 
 public interface ICredentialsService {
 	

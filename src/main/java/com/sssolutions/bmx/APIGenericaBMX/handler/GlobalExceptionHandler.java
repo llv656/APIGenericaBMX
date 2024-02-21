@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.APIService;
+import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.ResponseService;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.utils.APIService;
-import com.sssolutions.bmx.APIGenericaBMX.utils.ResponseService;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 
 import jakarta.servlet.http.HttpServletRequest;

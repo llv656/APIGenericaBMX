@@ -3,7 +3,8 @@
 .factorypath
 # Log file
 *.log
-
+*.classpath
+*.settings
 # BlueJ files
 *.ctxt
 

@@ -1,11 +1,11 @@
-package com.sssolutions.bmx.APIGenericaBMX.utils;
+package com.sssolutions.bmx.APIGenericaBMX.API.controller.utils;
 
 import org.springframework.stereotype.Component;
 
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIDeleteDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIErrorDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIOkWhitDataDTO;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseAPIOkDTO;
+import com.sssolutions.bmx.dto.ResponseAPIDeleteDTO;
+import com.sssolutions.bmx.dto.ResponseAPIErrorDTO;
+import com.sssolutions.bmx.dto.ResponseAPIOkDTO;
+import com.sssolutions.bmx.dto.ResponseAPIOkWhitDataDTO;
 
 @Component
 public class ResponseService{
@@ -14,8 +14,8 @@ public class ResponseService{
 		return new ResponseAPIOkDTO(folio, mensaje);
 	}
 	
-	public ResponseAPIOkWhitDataDTO buildResponseOkWhitData(String folio, String mensaje, Object result) {
-		return new ResponseAPIOkWhitDataDTO(folio, mensaje, result);
+	public <T> ResponseAPIOkWhitDataDTO<T> buildResponseOkWhitData(String folio, String mensaje, T result) {
+		return new ResponseAPIOkWhitDataDTO<T>(folio, mensaje, result);
 	}
 	
 	public ResponseAPIDeleteDTO buildResponseDelete(String folio, String mensaje, String[] detalles) {

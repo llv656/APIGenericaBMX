@@ -1,4 +1,4 @@
-package com.sssolutions.bmx.APIGenericaBMX.utils;
+package com.sssolutions.bmx.APIGenericaBMX.API.controller.utils;
 
 import java.net.InetAddress;
 import java.time.LocalDateTime;

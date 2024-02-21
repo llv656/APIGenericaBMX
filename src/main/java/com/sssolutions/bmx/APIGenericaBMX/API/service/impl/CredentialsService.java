@@ -19,7 +19,7 @@ import com.sssolutions.bmx.APIGenericaBMX.API.service.ICredentialsService;
 import com.sssolutions.bmx.APIGenericaBMX.BD.dao.ICredencialesApiBdRepository;
 import com.sssolutions.bmx.APIGenericaBMX.BD.entity.CredencialesApiBdEntity;
 import com.sssolutions.bmx.APIGenericaBMX.config.PropertyConfig;
-import com.sssolutions.bmx.APIGenericaBMX.dto.ResponseServiceDTO;
+import com.sssolutions.bmx.dto.ResponseServiceDTO;
 import com.sssolutions.bmx.APIGenericaBMX.values.Messages;
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 import com.sssolutions.bmx.CryptoBMX.CryptoBMX;
@@ -56,35 +56,39 @@ public class CredentialsService implements ICredentialsService {
 					(short) propertiesRequest.getIdApi(), 
 					(short) propertiesRequest.getIdEndpoint());
 			
-			response.put("api.db.driver", property.getPropertyString(Properties.JDBC_DRIVER));
-			response.put("api.db.serverAddress", property.getPropertyString(Properties.JDBC_URL));
-			response.put("api.db.database", credentialsEntity.getBdName());
-			response.put("api.db.schema", credentialsEntity.getSchemaBd());
+			if (credentialsEntity != null) {
+				response.put("api.db.driver", property.getPropertyString(Properties.JDBC_DRIVER));
+				response.put("api.db.serverAddress", property.getPropertyString(Properties.JDBC_URL));
+				response.put("api.db.database", credentialsEntity.getBdName());
+				response.put("api.db.schema", credentialsEntity.getSchemaBd());
+				
+				Map<String, String> credentials = cryptoSecurity.getCredentialsBD_BMX(
+						credentialsEntity.getUsrBd(), credentialsEntity.getPassBd(), 
+						webAppCredentials.getWebAppKey(), 
+						property.getPropertyString(Properties.CRYPTO_KEY_SEPARATOR)
+						);
+				response.put("api.db.usr", credentials.get("usr"));
+				response.put("api.db.passwd", credentials.get("pass"));
+				
+				responseDTO.setValid(true);
+				responseDTO.setResult(response);
+			} else {
+				responseDTO.setValid(false);
+				responseDTO.setMessage(Messages.ERROR_001);
+				errMsgDetails.add("Credenciales inválidas");
+				responseDTO.setDetails(errMsgDetails.toArray(new String[errMsgDetails.size()]));
+				responseDTO.setHttpStatus(HttpStatus.UNAUTHORIZED);
+			}
 			
-			Map<String, String> credentials = cryptoSecurity.getCredentialsBD_BMX(
-					credentialsEntity.getUsrBd(), credentialsEntity.getPassBd(), 
-					webAppCredentials.getWebAppKey(), 
-					property.getPropertyString(Properties.CRYPTO_KEY_SEPARATOR)
-					);
-			response.put("api.db.usr", credentials.get("usr"));
-			response.put("api.db.passwd", credentials.get("pass"));
-			
-			responseDTO.setValid(true);
-			responseDTO.setResult(response);
 		} catch (Exception e) {
 			LOGGER.error("\t\t".concat(e.toString()));
 			LOGGER.error("\t\t".concat(e.getMessage()));
-			
+
 			errMsgDetails.add(e.getClass().getName());
 			responseDTO.setValid(false);
 			responseDTO.setMessage(Messages.ERROR_001);
 			responseDTO.setDetails(errMsgDetails.toArray(new String[errMsgDetails.size()]));
-		}
-		
-		LOGGER.info("\t\tValidación de respuesta del servicio");
-		if (!responseDTO.isValid()) {
-			responseDTO.setMessage(Messages.ERROR_001);
-			responseDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+			responseDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return CompletableFuture.completedFuture(responseDTO);
