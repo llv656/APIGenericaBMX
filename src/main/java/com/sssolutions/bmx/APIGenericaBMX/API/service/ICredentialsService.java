@@ -8,6 +8,9 @@ import com.sssolutions.bmx.dto.ResponseServiceDTO;
 
 public interface ICredentialsService {
 	
-	CompletableFuture<ResponseServiceDTO> executeGetDataSourceWebApp(Map<String,String> headers, APIModel propertiesRequest);
+	CompletableFuture<ResponseServiceDTO> executeGetDataSourceWebApp(
+			Map<String,String> headers, 
+			CompletableFuture<APIModel> propertiesRequest
+	);
 
 }

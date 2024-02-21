@@ -40,7 +40,7 @@ public class EndpointUtils {
 		LOGGER.info("**Empieza solicitud ".concat(method));
 		
 		LOGGER.info("\tConfiguración de propiedades de solicitud");
-		APIModel propertiesRequest = apiService.getpropertiesRequest(adrress, method);
+		CompletableFuture<APIModel> propertiesRequest = apiService.getpropertiesRequest(adrress, method);
 		
 		LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
 		CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponse = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
@@ -51,11 +51,11 @@ public class EndpointUtils {
 		Object response = responseDTO.isValid()
 				? !method.startsWith("get") 
 					? responseService.buildResponseOK(
-							propertiesRequest.getFolio(), responseDTO.getMessage())
+							propertiesRequest.join().getFolio(), responseDTO.getMessage())
 					: responseService.buildResponseOkWhitData(
-							propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getResult())
+							propertiesRequest.join().getFolio(), responseDTO.getMessage(), responseDTO.getResult())
 				: responseService.buildResponseError(
-						responseDTO.getHttpStatus().toString(), propertiesRequest.getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
+						responseDTO.getHttpStatus().toString(), propertiesRequest.join().getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));
 		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());

@@ -4,14 +4,14 @@ import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
-import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
 import com.sssolutions.bmx.APIGenericaBMX.config.PropertyConfig;
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 
@@ -24,33 +24,45 @@ public class APIService{
 	
 	private PropertyConfig property;
 	
-	public APIModel getpropertiesRequest (String IPAddrees, String endpoint) {
+	@Async
+	public CompletableFuture<APIModel> getpropertiesRequest (String IPAddrees, String endpoint) {
 		
 		APIModel apiModel = new APIModel();
 		
 		try {
 			
 			InetAddress addr = InetAddress.getLocalHost();
-			String serieRandom = getRandomNumber();
+            CompletableFuture<String> randomSerieFuture = getRandomNumber();
+            CompletableFuture<String> dateSerieFuture = getDateSerie();
+            CompletableFuture<String> dateFuture = getDate();
+            CompletableFuture<Integer> serviceIdFuture = getServiceId(endpoint);
+            
+            CompletableFuture<Void> allFutures = CompletableFuture.allOf(randomSerieFuture, dateSerieFuture, dateFuture, serviceIdFuture);
 			
-			apiModel.setDireccionIpCliente(IPAddrees);
-			apiModel.setFechaSolicitud(getDate());
-			apiModel.setFolio("BMX".concat(getDateSerie()).concat(serieRandom));
-			apiModel.setServidor(addr.getHostAddress());
-			apiModel.setIdApi(property.getPropertyInteger(Properties.API));
-			apiModel.setIdEndpoint(getServiceId(endpoint));
-			
+            allFutures.thenRun(() -> { 
+                String randomSerie = randomSerieFuture.join(); 
+                String dateSerie = dateSerieFuture.join(); 
+                String date = dateFuture.join(); 
+                int serviceId = serviceIdFuture.join();
+                
+                apiModel.setDireccionIpCliente(IPAddrees);
+                apiModel.setFechaSolicitud(date);
+                apiModel.setFolio("BMX".concat(dateSerie).concat(randomSerie));
+                apiModel.setServidor(addr.getHostAddress());
+                apiModel.setIdApi(property.getPropertyInteger(Properties.API));
+                apiModel.setIdEndpoint(serviceId);
+            });
 		} catch (Exception e) {
 			
 			LOGGER.error(e.getMessage());
 		}
 		
-		return apiModel;
+        return CompletableFuture.completedFuture(apiModel);
 		
 	}
 	
 	/*{CHANGE_ARTEFACT}*/
-	private int getServiceId(String endpoint) {
+	private CompletableFuture<Integer> getServiceId(String endpoint) {
 		
 		int servicioId = 0;
 		
@@ -67,23 +79,26 @@ public class APIService{
 			LOGGER.error(e.getMessage());
 		}
 
-		return servicioId;
+		return CompletableFuture.completedFuture(servicioId);
 		
 	}
 	
-	private String getRandomNumber() {
+	private CompletableFuture<String> getRandomNumber() {
 		String cadena = String.valueOf(Math.abs((UUID.fromString(UUID.randomUUID().toString()).hashCode())));
-		return cadena.substring(0, 3);
+		cadena = cadena.substring(0, 3);
+		return CompletableFuture.completedFuture(cadena);
 	}
 	
-	private String getDate() {
+	private CompletableFuture<String> getDate() {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-		return dateFormat.format(LocalDateTime.now());
+		String date = dateFormat.format(LocalDateTime.now());
+		return CompletableFuture.completedFuture(date);
 	}
 	
-	private String getDateSerie() {
+	private CompletableFuture<String> getDateSerie() {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-		return dateFormat.format(LocalDateTime.now());
+		String date = dateFormat.format(LocalDateTime.now());
+		return CompletableFuture.completedFuture(date);
 	}
 	
 }

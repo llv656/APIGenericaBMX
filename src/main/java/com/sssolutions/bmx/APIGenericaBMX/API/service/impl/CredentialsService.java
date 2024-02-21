@@ -37,49 +37,63 @@ public class CredentialsService implements ICredentialsService {
 
 	@Override
 	@Async
-	public CompletableFuture<ResponseServiceDTO> executeGetDataSourceWebApp(Map<String, String> headers, APIModel propertiesRequest) {
+	public CompletableFuture<ResponseServiceDTO> executeGetDataSourceWebApp(
+			Map<String, String> headers, 
+			CompletableFuture<APIModel> propertiesRequest
+	) {
 		LOGGER.info("\t\tMethod:".concat(new Object(){}.getClass().getEnclosingMethod().getName()));
 
 		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
+		ArrayList<String> errMsgDetails = new ArrayList<>();
 		
 		LOGGER.info("\t\tDTO credenciales app web ");
 		WebAppCredentialsModel webAppCredentials = new WebAppCredentialsModel();
 		webAppCredentials.setWebAppID(UUID.fromString(StringEscapeUtils.escapeSql(headers.get("x_web_app_id"))));
 		webAppCredentials.setWebAppKey(StringEscapeUtils.escapeSql(headers.get("x_web_app_key")));
 		
-		LOGGER.info("\t\tRecuperación de usuario API BD");
-		Map<String, String> response = new HashMap<>();
-		ArrayList<String> errMsgDetails = new ArrayList<>();
 		try {
-			CredencialesApiBdEntity credentialsEntity = credencialesAPIBdRepository.getBDAPICredentials(
-					webAppCredentials.getWebAppID(), 
-					(short) propertiesRequest.getIdApi(), 
-					(short) propertiesRequest.getIdEndpoint());
 			
-			if (credentialsEntity != null) {
-				response.put("api.db.driver", property.getPropertyString(Properties.JDBC_DRIVER));
-				response.put("api.db.serverAddress", property.getPropertyString(Properties.JDBC_URL));
-				response.put("api.db.database", credentialsEntity.getBdName());
-				response.put("api.db.schema", credentialsEntity.getSchemaBd());
-				
-				Map<String, String> credentials = cryptoSecurity.getCredentialsBD_BMX(
-						credentialsEntity.getUsrBd(), credentialsEntity.getPassBd(), 
-						webAppCredentials.getWebAppKey(), 
-						property.getPropertyString(Properties.CRYPTO_KEY_SEPARATOR)
-						);
-				response.put("api.db.usr", credentials.get("usr"));
-				response.put("api.db.passwd", credentials.get("pass"));
-				
-				responseDTO.setValid(true);
-				responseDTO.setResult(response);
-			} else {
-				responseDTO.setValid(false);
-				responseDTO.setMessage(Messages.ERROR_001);
-				errMsgDetails.add("Credenciales inválidas");
-				responseDTO.setDetails(errMsgDetails.toArray(new String[errMsgDetails.size()]));
-				responseDTO.setHttpStatus(HttpStatus.UNAUTHORIZED);
-			}
+			LOGGER.info("\t\tRecuperación de usuario API BD");
+			Map<String, String> response = new HashMap<>();
 			
+			CompletableFuture<ResponseServiceDTO> responseFuture = propertiesRequest.thenCompose(pR -> {
+				
+				ResponseServiceDTO responseServiceAsync = new ResponseServiceDTO();
+				
+				CredencialesApiBdEntity credentialsEntity = credencialesAPIBdRepository.getBDAPICredentials(
+						webAppCredentials.getWebAppID(), 
+						(short) pR.getIdApi(), 
+						(short) pR.getIdEndpoint());
+				
+				if (credentialsEntity != null) {
+					response.put("api.db.driver", property.getPropertyString(Properties.JDBC_DRIVER));
+					response.put("api.db.serverAddress", property.getPropertyString(Properties.JDBC_URL));
+					response.put("api.db.database", credentialsEntity.getBdName());
+					response.put("api.db.schema", credentialsEntity.getSchemaBd());
+					
+					Map<String, String> credentials = cryptoSecurity.getCredentialsBD_BMX(
+							credentialsEntity.getUsrBd(), credentialsEntity.getPassBd(), 
+							webAppCredentials.getWebAppKey(), 
+							property.getPropertyString(Properties.CRYPTO_KEY_SEPARATOR)
+							);
+					response.put("api.db.usr", credentials.get("usr"));
+					response.put("api.db.passwd", credentials.get("pass"));
+					
+					responseServiceAsync.setValid(true);
+					responseServiceAsync.setResult(response);
+				} else {
+					responseServiceAsync.setValid(false);
+					responseServiceAsync.setMessage(Messages.ERROR_001);
+					errMsgDetails.add("Credenciales inválidas");
+					responseServiceAsync.setDetails(errMsgDetails.toArray(new String[errMsgDetails.size()]));
+					responseServiceAsync.setHttpStatus(HttpStatus.UNAUTHORIZED);
+				}
+				
+				return CompletableFuture.completedStage(responseServiceAsync);
+						
+			});
+			
+			return responseFuture;
 		} catch (Exception e) {
 			LOGGER.error("\t\t".concat(e.toString()));
 			LOGGER.error("\t\t".concat(e.getMessage()));
