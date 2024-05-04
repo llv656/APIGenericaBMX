@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sssolutions.bmx.APIGenericaBMX.API.validation.ExistingUser;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ import lombok.Getter;
 
 @Getter
 @NotNull
+@ExistingUser
 public class RequestAddUserExampleModel {
 
 	@NotNull(message = "Falta campo: nombre")

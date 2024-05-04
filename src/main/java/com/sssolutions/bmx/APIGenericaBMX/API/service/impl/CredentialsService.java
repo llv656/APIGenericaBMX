@@ -38,7 +38,8 @@ public class CredentialsService implements ICredentialsService {
 	@Override
 	@Async
 	public CompletableFuture<ResponseServiceDTO> executeGetDataSourceWebApp(
-			Map<String, String> headers, 
+			String webAppId,
+			String webAppKey,
 			CompletableFuture<APIModel> propertiesRequest
 	) {
 		LOGGER.info("\t\tMethod:".concat(new Object(){}.getClass().getEnclosingMethod().getName()));
@@ -48,8 +49,8 @@ public class CredentialsService implements ICredentialsService {
 		
 		LOGGER.info("\t\tDTO credenciales app web ");
 		WebAppCredentialsModel webAppCredentials = new WebAppCredentialsModel();
-		webAppCredentials.setWebAppID(UUID.fromString(StringEscapeUtils.escapeSql(headers.get("x_web_app_id"))));
-		webAppCredentials.setWebAppKey(StringEscapeUtils.escapeSql(headers.get("x_web_app_key")));
+		webAppCredentials.setWebAppID(UUID.fromString(StringEscapeUtils.escapeSql(webAppId)));
+		webAppCredentials.setWebAppKey(StringEscapeUtils.escapeSql(webAppKey));
 		
 		try {
 			
@@ -72,7 +73,8 @@ public class CredentialsService implements ICredentialsService {
 					response.put("api.db.schema", credentialsEntity.getSchemaBd());
 					
 					Map<String, String> credentials = cryptoSecurity.getCredentialsBD_BMX(
-							credentialsEntity.getUsrBd(), credentialsEntity.getPassBd(), 
+							credentialsEntity.getUsrBd(), 
+							credentialsEntity.getPassBd(), 
 							webAppCredentials.getWebAppKey(), 
 							property.getPropertyString(Properties.CRYPTO_KEY_SEPARATOR)
 							);

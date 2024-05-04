@@ -1,7 +1,7 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.controller.utils;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,36 +14,43 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import com.sssolutions.bmx.APIGenericaBMX.API.service.ICredentialsService;
 import com.sssolutions.bmx.dto.ResponseServiceDTO;
-import com.sssolutions.bmx.functionalInterface.QuadFunction;
+import com.sssolutions.bmx.APIGenericaBMX.API.aspects.PreProcessingSetupAspect;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * This class provides utility methods for executing API endpoints.
+ * 
+ * @author Lenin Leines Vite
+ * @version 1.0.0
+ */
 @Component
 @AllArgsConstructor
 public class EndpointUtils {
 	
 	private static final Logger LOGGER = LogManager.getLogger(EndpointUtils.class);
 	private ResponseService responseService;
-	private APIService apiService;
-	private ICredentialsService credentialsService;
 
-	public final QuadFunction<
-		Map<String, String>,
-		String,
+	/**
+	 * Represents an implementation of the Endpoint interface.
+	 * Executes the endpoint request and returns the response.
+	 *
+	 * @param headers   The headers for the request.
+	 * @param method    The HTTP method for the request.
+	 * @param adrress   The address of the endpoint.
+	 * @param callback  The callback function to process the response.
+	 * @return          The ResponseEntity containing the response and HTTP status.
+	 */
+	public final BiFunction<
 		String,
 		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO>,
 		ResponseEntity<Object>
-	> executeEndpoint = (headers, method, adrress, callback) -> {
+	> executeEndpoint = (method, callback) -> {
 		LOGGER.info("**Empieza solicitud ".concat(method));
-		
-		LOGGER.info("\tConfiguración de propiedades de solicitud");
-		CompletableFuture<APIModel> propertiesRequest = apiService.getpropertiesRequest(adrress, method);
-		
-		LOGGER.info("\tEmpieza servicio de recuperar credenciales BD");
-		CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponse = credentialsService.executeGetDataSourceWebApp(headers, propertiesRequest);
+		CompletableFuture<APIModel> propertiesRequest = PreProcessingSetupAspect.asyncRequestProperties.get();
+		CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponse = PreProcessingSetupAspect.asyncCredentials.get();
 		
 		ResponseServiceDTO responseDTO = callback.apply(credentiaslAsyncResponse);
 		
@@ -61,6 +68,12 @@ public class EndpointUtils {
 		return new ResponseEntity<Object>(response,responseDTO.getHttpStatus());
 	};
 	
+	/**
+	 * Transforms the given Errors object into a ResponseServiceDTO object.
+	 * 
+	 * @param e the Errors object containing the error information
+	 * @return the ResponseServiceDTO object with transformed error information
+	 */
 	public final Function<Errors, ResponseServiceDTO> transformErrorsAtServiceResponse = e -> {
 		ResponseServiceDTO responseDTO = new ResponseServiceDTO();
     	String camposError = e.getFieldErrors()

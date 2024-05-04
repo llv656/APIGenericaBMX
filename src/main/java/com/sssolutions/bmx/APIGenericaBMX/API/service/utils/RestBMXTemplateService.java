@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
-
 import lombok.AllArgsConstructor;
 
 @Component

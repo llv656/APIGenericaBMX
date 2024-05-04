@@ -81,5 +81,30 @@ public class UserExampleOperations implements IUserExampleRepository {
 	
 		return bdService.executeDao.apply(callback, credentiaslAsyncResponseDAO);
 	}
+
+	@Override
+	public ResponseDaoDTO validateUserExist(String username,
+			CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO) {
+		
+		Function<NamedParameterJdbcTemplate, ResponseDaoDTO> callback  = jt-> {
+			ResponseDaoDTO r= new ResponseDaoDTO(); 
+			SqlParameterSource parameters = new MapSqlParameterSource()
+					.addValue("userName", username)
+					.addValue("userExist", null)
+					.addValue("mensajeSalida", null);
+			
+			SpSimpleResponseEntity entity = jt.queryForObject(
+					"call test_sss.sp_validate_user_exist(:userName, :userExist, :mensajeSalida)",
+					parameters,
+					new SpSimpleResponseRowMapper());
+            
+            r.setValid(entity.getValid());
+			r.setDaoStatus(entity.getValid() ? DAOStatus.successful : DAOStatus.err_execution);
+			r.setMessage(new String[] { entity.getMessage() });
+			return r; 
+		};
+	
+		return bdService.executeDao.apply(callback, credentiaslAsyncResponseDAO);
+	}
 	
 }

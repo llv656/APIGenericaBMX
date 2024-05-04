@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.EndpointUtils;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.IExampleService;
+import com.sssolutions.bmx.APIGenericaBMX.API.validation.ExistingUser;
 import com.sssolutions.bmx.dto.ResponseServiceDTO;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -34,10 +34,9 @@ import lombok.AllArgsConstructor;
 public class APIExampleController {
 
 	private static final Logger LOGGER = LogManager.getLogger(APIExampleController.class);
-	private HttpServletRequest request;
 	private IExampleService exampleService;
 	private EndpointUtils endpointUtils;
-
+	
 	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public Object addUserController(
 			@RequestHeader Map<String, String> headers, 
@@ -57,7 +56,7 @@ public class APIExampleController {
 			return responseDTO;
 		};
 		
-		return endpointUtils.executeEndpoint.apply(headers, method, request.getRemoteAddr(), callback);	
+		return endpointUtils.executeEndpoint.apply(method, callback);
 	}
 	
 	@GetMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -72,7 +71,7 @@ public class APIExampleController {
 			responseDTO = exampleService.executeGetUsersService(futureCredentials);
 			return responseDTO;
 		};
-		return endpointUtils.executeEndpoint.apply(headers, method, request.getRemoteAddr(), callback);
+		return endpointUtils.executeEndpoint.apply(method, callback);
 	}
 	
 	@GetMapping(value = {"/{userId}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -89,7 +88,7 @@ public class APIExampleController {
 			return responseDTO;
 		};
 		
-		return endpointUtils.executeEndpoint.apply(headers, method, request.getRemoteAddr(), callback);
+		return endpointUtils.executeEndpoint.apply(method, callback);
 	}
 	
 	@PutMapping(value = {"/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -107,7 +106,7 @@ public class APIExampleController {
 			return responseDTO;
 		};
 		
-		return endpointUtils.executeEndpoint.apply(headers, method, request.getRemoteAddr(), callback);
+		return endpointUtils.executeEndpoint.apply(method, callback);
 	}
 	
 	@PutMapping(value = {"/tipo_usuario/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -126,7 +125,7 @@ public class APIExampleController {
 			return responseDTO;
 		};	
 		
-		return endpointUtils.executeEndpoint.apply(headers, method, request.getRemoteAddr(), callback);
+		return endpointUtils.executeEndpoint.apply(method, callback);
 	}
 	
 	@DeleteMapping(value = {"/{idUser}"},consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -143,6 +142,6 @@ public class APIExampleController {
 			return responseDTO;
 		};
 		
-		return endpointUtils.executeEndpoint.apply(headers, method, request.getRemoteAddr(), callback);
+		return endpointUtils.executeEndpoint.apply(method, callback);
 	}
 }

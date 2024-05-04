@@ -37,7 +37,9 @@ public class ExampleServiceImpl implements IExampleService{
 			body.sanitizeFields();
 			
 			LOGGER.info("\t\tRegistro de usuario");
-			ResponseDaoDTO responseDAO = userExampleDAO.addClient(body, credentiaslAsyncResponseDAO);
+			ResponseDaoDTO responseDAO = new ResponseDaoDTO();
+			responseDAO = userExampleDAO.addClient(body, credentiaslAsyncResponseDAO);
+			
 			return responseDAO;
 		};
 		

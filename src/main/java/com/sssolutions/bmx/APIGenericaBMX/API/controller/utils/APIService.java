@@ -17,58 +17,63 @@ import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * This class represents the API service that retrieves properties request.
+ * 
+ * @author Lenin Leines Vite
+ * @version 1.0.0
+ */
 @Component
 @AllArgsConstructor
-public class APIService{
+public class APIService {
 	private static final Logger LOGGER = LogManager.getLogger(APIService.class);
-	
+
 	private PropertyConfig property;
-	
+
+	/**
+	 * Retrieves the properties request from the specified IP address and endpoint asynchronously.
+	 *
+	 * @param IPAddrees The IP address from which the request is made.
+	 * @param endpoint The endpoint for the request.
+	 * @return A CompletableFuture containing the APIModel object representing the properties request.
+	 */
 	@Async
-	public CompletableFuture<APIModel> getpropertiesRequest (String IPAddrees, String endpoint) {
-		
+	public CompletableFuture<APIModel> getpropertiesRequest(String IPAddrees, String endpoint) {
+
 		APIModel apiModel = new APIModel();
-		
+
 		try {
-			
+
 			InetAddress addr = InetAddress.getLocalHost();
-            CompletableFuture<String> randomSerieFuture = getRandomNumber();
-            CompletableFuture<String> dateSerieFuture = getDateSerie();
-            CompletableFuture<String> dateFuture = getDate();
-            CompletableFuture<Integer> serviceIdFuture = getServiceId(endpoint);
-            
-            CompletableFuture<Void> allFutures = CompletableFuture.allOf(randomSerieFuture, dateSerieFuture, dateFuture, serviceIdFuture);
-			
-            allFutures.thenRun(() -> { 
-                String randomSerie = randomSerieFuture.join(); 
-                String dateSerie = dateSerieFuture.join(); 
-                String date = dateFuture.join(); 
-                int serviceId = serviceIdFuture.join();
-                
-                apiModel.setDireccionIpCliente(IPAddrees);
-                apiModel.setFechaSolicitud(date);
-                apiModel.setFolio("BMX".concat(dateSerie).concat(randomSerie));
-                apiModel.setServidor(addr.getHostAddress());
-                apiModel.setIdApi(property.getPropertyInteger(Properties.API));
-                apiModel.setIdEndpoint(serviceId);
-            });
+			apiModel.setDireccionIpCliente(IPAddrees);
+			apiModel.setFechaSolicitud(getDate());
+			apiModel.setFolio("BMX".concat(getDateSerie()).concat(getRandomNumber()));
+			apiModel.setServidor(addr.getHostAddress());
+			apiModel.setIdApi(property.getPropertyInteger(Properties.API));
+			apiModel.setIdEndpoint(getServiceId(endpoint));
+
 		} catch (Exception e) {
-			
 			LOGGER.error(e.getMessage());
 		}
-		
-        return CompletableFuture.completedFuture(apiModel);
-		
+
+		return CompletableFuture.completedFuture(apiModel);
+
 	}
-	
+
+	/**
+	 * Retrieves the service ID based on the provided endpoint.
+	 *
+	 * @param endpoint The endpoint for the request.
+	 * @return The service ID associated with the endpoint.
+	 */
 	/*{CHANGE_ARTEFACT}*/
-	private CompletableFuture<Integer> getServiceId(String endpoint) {
-		
+	private Integer getServiceId(String endpoint) {
+
 		int servicioId = 0;
-		
+
 		try {
 			switch (endpoint) {
-				case "addUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_ADD_USER);
+				case "POST-/BMX/apigenerica/user_example" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_ADD_USER);
 				case "getUsersController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USERS);
 				case "getUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USER);
 				case "updateUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_USER);
@@ -79,26 +84,26 @@ public class APIService{
 			LOGGER.error(e.getMessage());
 		}
 
-		return CompletableFuture.completedFuture(servicioId);
-		
+		return servicioId;
+
 	}
-	
-	private CompletableFuture<String> getRandomNumber() {
+
+	private String getRandomNumber() {
 		String cadena = String.valueOf(Math.abs((UUID.fromString(UUID.randomUUID().toString()).hashCode())));
 		cadena = cadena.substring(0, 3);
-		return CompletableFuture.completedFuture(cadena);
+		return cadena;
 	}
-	
-	private CompletableFuture<String> getDate() {
+
+	private String getDate() {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 		String date = dateFormat.format(LocalDateTime.now());
-		return CompletableFuture.completedFuture(date);
+		return date;
 	}
-	
-	private CompletableFuture<String> getDateSerie() {
+
+	private String getDateSerie() {
 		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 		String date = dateFormat.format(LocalDateTime.now());
-		return CompletableFuture.completedFuture(date);
+		return date;
 	}
-	
+
 }
