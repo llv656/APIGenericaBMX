@@ -3,6 +3,7 @@ package com.sssolutions.bmx.APIGenericaBMX.API.controller.utils;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,24 +38,21 @@ public class EndpointUtils {
 	 * Represents an implementation of the Endpoint interface.
 	 * Executes the endpoint request and returns the response.
 	 *
-	 * @param headers   The headers for the request.
 	 * @param method    The HTTP method for the request.
-	 * @param adrress   The address of the endpoint.
 	 * @param callback  The callback function to process the response.
 	 * @return          The ResponseEntity containing the response and HTTP status.
 	 */
 	public final BiFunction<
 		String,
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO>,
+		Supplier<ResponseServiceDTO>,
 		ResponseEntity<Object>
 	> executeEndpoint = (method, callback) -> {
 		LOGGER.info("**Empieza solicitud ".concat(method));
 		CompletableFuture<APIModel> propertiesRequest = PreProcessingSetupAspect.asyncRequestProperties.get();
-		CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponse = PreProcessingSetupAspect.asyncCredentials.get();
 		
-		ResponseServiceDTO responseDTO = callback.apply(credentiaslAsyncResponse);
+		ResponseServiceDTO responseDTO = callback.get();
 		
-		LOGGER.info("\tConstrucción de respuesta");
+		LOGGER.info("\tConstrucción de respuesta: ".concat(method));
 		Object response = responseDTO.isValid()
 				? !method.startsWith("get") 
 					? responseService.buildResponseOK(

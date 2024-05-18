@@ -7,6 +7,4 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @Configuration
 @EnableAspectJAutoProxy 
 @ComponentScan(basePackages = "com.sssolutions.bmx.APIGenericaBMX.aspects")
-public class AspectConfig {
-
-}
+public class AspectConfig {}

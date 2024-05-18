@@ -1,6 +1,5 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.validation;
 
-import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

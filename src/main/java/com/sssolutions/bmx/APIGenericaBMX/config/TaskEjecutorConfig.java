@@ -11,7 +11,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class TaskEjecutorConfig {
 	
-	@Value("sss.bl-pss.module.name")
+	@Value("${bl-psss.module.name}")
 	private String moduleName;
 
 	@Bean

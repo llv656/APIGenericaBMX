@@ -1,6 +1,5 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.validation;
 
-import com.sssolutions.bmx.APIGenericaBMX.API.aspects.PreProcessingSetupAspect;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
 
@@ -16,7 +15,7 @@ public class ExistingUserValidator implements ConstraintValidator<ExistingUser, 
 	@Override
 	public boolean isValid(RequestAddUserExampleModel value, ConstraintValidatorContext context) {
 		value.sanitizeFields();
-		if (!exampleRepository.validateUserExist(value.getNombre(), PreProcessingSetupAspect.asyncCredentials.get()).isValid()) {
+		if (!exampleRepository.validateUserExist(value.getNombre()).isValid()) {
 			context.disableDefaultConstraintViolation();
 			context.buildConstraintViolationWithTemplate("Usuario existe, ingrese otro nombre de usuario.")
 					.addPropertyNode("nombre")

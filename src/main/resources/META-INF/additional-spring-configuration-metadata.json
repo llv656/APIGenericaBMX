@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "bl-psss.module.name",
+    "type": "java.lang.String",
+    "description": "Nombre del módulo BL-PSSS"
+  },
+  {
+    "name": "pl-psss.connections.minimumIdle",
+    "type": "java.lang.Integer",
+    "description": "Minimo de conexiones PL-PSSS"
+  },
+  {
+    "name": "pl-psss.connections.maximumPoolSize",
+    "type": "java.lang.Integer",
+    "description": "Tamaño maximo del grupo de conexiones PL-PSSS"
+  }
+]}

@@ -1,16 +1,13 @@
 package com.sssolutions.bmx.APIGenericaBMX.BD.dao.operations;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import com.sssolutions.bmx.dto.ResponseServiceDTO;
+import com.sssolutions.bmx.APIGenericaBMX.API.aspects.PreProcessingSetupAspect;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
 import com.sssolutions.bmx.APIGenericaBMX.BD.entity.FnUsuarioEntity;
@@ -26,13 +23,12 @@ import lombok.AllArgsConstructor;
 @Repository
 @AllArgsConstructor
 public class UserExampleOperations implements IUserExampleRepository {
-	private static final Logger LOGGER = LogManager.getLogger(UserExampleOperations.class);
 	
 	private DaoBMX bdService;
 
 	@Override
-	public ResponseDaoDTO addClient (RequestAddUserExampleModel userModel, CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO){
-		LOGGER.info("\t\tMethod: ".concat(new Object(){}.getClass().getEnclosingMethod().getName()));
+	public ResponseDaoDTO addClient (RequestAddUserExampleModel userModel){
+		NamedParameterJdbcTemplate jdbcTemplate = PreProcessingSetupAspect.getJdbcTemplate_PLSSS.get();
 		
 		Function<NamedParameterJdbcTemplate, ResponseDaoDTO> callback  = jt-> {
 			ResponseDaoDTO r = new ResponseDaoDTO();
@@ -57,12 +53,12 @@ public class UserExampleOperations implements IUserExampleRepository {
 			return r;
 		};
 		
-		return bdService.executeDao.apply(callback, credentiaslAsyncResponseDAO);
+		return bdService.executePLSSSObject.apply(callback, jdbcTemplate);
 	}
 
 	@Override
-	public ResponseDaoDTO getClient(Integer userId, CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO) {
-		LOGGER.info("\t\tMethod: ".concat(new Object(){}.getClass().getEnclosingMethod().getName()));
+	public ResponseDaoDTO getClient(Integer userId){
+		NamedParameterJdbcTemplate jdbcTemplate = PreProcessingSetupAspect.getJdbcTemplate_PLSSS.get();
 		
 		Function<NamedParameterJdbcTemplate, ResponseDaoDTO> callback  = jt-> {
 			ResponseDaoDTO responseDAO = new ResponseDaoDTO(); 
@@ -79,12 +75,12 @@ public class UserExampleOperations implements IUserExampleRepository {
 			return responseDAO; 
 		};
 	
-		return bdService.executeDao.apply(callback, credentiaslAsyncResponseDAO);
+		return bdService.executePLSSSObject.apply(callback, jdbcTemplate);
 	}
 
 	@Override
-	public ResponseDaoDTO validateUserExist(String username,
-			CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO) {
+	public ResponseDaoDTO validateUserExist(String username){
+		NamedParameterJdbcTemplate jdbcTemplate = PreProcessingSetupAspect.getJdbcTemplate_PLSSS.get();
 		
 		Function<NamedParameterJdbcTemplate, ResponseDaoDTO> callback  = jt-> {
 			ResponseDaoDTO r= new ResponseDaoDTO(); 
@@ -104,7 +100,7 @@ public class UserExampleOperations implements IUserExampleRepository {
 			return r; 
 		};
 	
-		return bdService.executeDao.apply(callback, credentiaslAsyncResponseDAO);
+		return bdService.executePLSSSObject.apply(callback, jdbcTemplate);
 	}
 	
 }

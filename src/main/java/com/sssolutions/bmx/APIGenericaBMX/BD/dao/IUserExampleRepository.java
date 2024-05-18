@@ -1,9 +1,6 @@
 package com.sssolutions.bmx.APIGenericaBMX.BD.dao;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
-import com.sssolutions.bmx.dto.ResponseServiceDTO;
 import com.sssolutions.bmx.dto.ResponseDaoDTO;
 
 /**
@@ -18,26 +15,23 @@ public interface IUserExampleRepository {
 	 * Adds a client user example to the repository.
 	 *
 	 * @param userModel                   The user model containing the client information.
-	 * @param credentiaslAsyncResponseDAO The CompletableFuture for handling the response asynchronously.
 	 * @return                            The response data transfer object.
 	 */
-	ResponseDaoDTO addClient(RequestAddUserExampleModel userModel, CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO);
+	ResponseDaoDTO addClient(RequestAddUserExampleModel userModel);
 
 	/**
 	 * Retrieves a client user example from the repository.
 	 *
 	 * @param userId                      The ID of the client user.
-	 * @param credentiaslAsyncResponseDAO The CompletableFuture for handling the response asynchronously.
 	 * @return                            The response data transfer object.
 	 */
-	ResponseDaoDTO getClient(Integer userId, CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO);
+	ResponseDaoDTO getClient(Integer userId);
 	
 	/**
 	 * Validates the username of a client user example from the repository.
 	 *
-	 * @param credentiaslAsyncResponseDAO The CompletableFuture for handling the response asynchronously.
 	 * @return                            The response data transfer object.
 	 */
-	ResponseDaoDTO validateUserExist(String username, CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO);
+	ResponseDaoDTO validateUserExist(String username);
 
 }

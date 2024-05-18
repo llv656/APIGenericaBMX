@@ -1,6 +1,5 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.service.impl;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,19 +25,16 @@ public class ExampleServiceImpl implements IExampleService{
 	private ServiceUtils serviceUtils;
 
 	@Override
-	public ResponseServiceDTO executeAddUserService(
-			CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO,
-			RequestAddUserExampleModel body
-	) {
+	public ResponseServiceDTO executeAddUserService(RequestAddUserExampleModel body) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
-		
+
 		Supplier<ResponseDaoDTO> callback = () -> {	
 			LOGGER.info("\t\tEmpieza sanitización de campos");
 			body.sanitizeFields();
 			
 			LOGGER.info("\t\tRegistro de usuario");
 			ResponseDaoDTO responseDAO = new ResponseDaoDTO();
-			responseDAO = userExampleDAO.addClient(body, credentiaslAsyncResponseDAO);
+			responseDAO = userExampleDAO.addClient(body);
 			
 			return responseDAO;
 		};
@@ -49,21 +45,18 @@ public class ExampleServiceImpl implements IExampleService{
 	}
 
 	@Override
-	public ResponseServiceDTO executeGetUsersService(CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO) {
+	public ResponseServiceDTO executeGetUsersService() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseServiceDTO executeGetUserByIdService(
-			CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO,
-			Integer id
-	) {	
+	public ResponseServiceDTO executeGetUserByIdService(Integer id) {	
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 
 		Supplier<ResponseDaoDTO> callback = () -> {	
 			LOGGER.info("\t\tObtener usuario");
-			ResponseDaoDTO responseDAO = userExampleDAO.getClient(id, credentiaslAsyncResponseDAO);
+			ResponseDaoDTO responseDAO = userExampleDAO.getClient(id);
 			return responseDAO;
 		};
 		
@@ -73,20 +66,20 @@ public class ExampleServiceImpl implements IExampleService{
 	}
 
 	@Override
-	public ResponseServiceDTO executeUpdateUserByIdService(CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO, RequestAddUserExampleModel body, int id) {
+	public ResponseServiceDTO executeUpdateUserByIdService(RequestAddUserExampleModel body, int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseServiceDTO executeUpdateTypeUserByIdService(CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO, int userType,
+	public ResponseServiceDTO executeUpdateTypeUserByIdService(int userType,
 			int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ResponseServiceDTO executeDeleteUserByIdService(CompletableFuture<ResponseServiceDTO> credentiaslAsyncResponseDAO, int id) {
+	public ResponseServiceDTO executeDeleteUserByIdService(int id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

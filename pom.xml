@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>RepositoryBMX</groupId>
 			<artifactId>RepositoryBMX</artifactId>
-			<version>0.0.3-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>

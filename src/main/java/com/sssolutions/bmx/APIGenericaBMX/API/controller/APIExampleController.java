@@ -1,8 +1,7 @@
 package com.sssolutions.bmx.APIGenericaBMX.API.controller;
 
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.EndpointUtils;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.IExampleService;
-import com.sssolutions.bmx.APIGenericaBMX.API.validation.ExistingUser;
 import com.sssolutions.bmx.dto.ResponseServiceDTO;
 
 import jakarta.validation.Valid;
@@ -45,13 +43,13 @@ public class APIExampleController {
 	) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO> callback = futureCredentials -> {
+		Supplier<ResponseServiceDTO> callback = () -> {
 			ResponseServiceDTO responseDTO = new ResponseServiceDTO();
 			if (errors.hasErrors()) {
 				responseDTO = endpointUtils.transformErrorsAtServiceResponse.apply(errors);
 			} else {
 				LOGGER.info("\tEmpieza servicio agregar usuario");
-				responseDTO = exampleService.executeAddUserService(futureCredentials, body);
+				responseDTO = exampleService.executeAddUserService(body);
 			}
 			return responseDTO;
 		};
@@ -65,10 +63,10 @@ public class APIExampleController {
 	) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO> callback = futureCredentials -> {
+		Supplier<ResponseServiceDTO> callback = () -> {
 			LOGGER.info("\tEmpieza servicio recuperar usuario");
 			ResponseServiceDTO responseDTO = new ResponseServiceDTO();
-			responseDTO = exampleService.executeGetUsersService(futureCredentials);
+			responseDTO = exampleService.executeGetUsersService();
 			return responseDTO;
 		};
 		return endpointUtils.executeEndpoint.apply(method, callback);
@@ -81,10 +79,10 @@ public class APIExampleController {
 	) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO> callback = futureCredentials -> {
+		Supplier<ResponseServiceDTO> callback = () -> {
 			LOGGER.info("\tEmpieza servicio agregar usuario");
 			ResponseServiceDTO responseDTO = new ResponseServiceDTO();
-			responseDTO = exampleService.executeGetUserByIdService(futureCredentials, userId);
+			responseDTO = exampleService.executeGetUserByIdService(userId);
 			return responseDTO;
 		};
 		
@@ -99,10 +97,10 @@ public class APIExampleController {
 	) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO> callback = futureCredentials -> {
+		Supplier<ResponseServiceDTO> callback = () -> {
 			LOGGER.info("\tEmpieza servicio actualizar usuario");
 			ResponseServiceDTO responseDTO = new ResponseServiceDTO();
-			responseDTO = exampleService.executeUpdateUserByIdService(futureCredentials, body, idUser);
+			responseDTO = exampleService.executeUpdateUserByIdService(body, idUser);
 			return responseDTO;
 		};
 		
@@ -118,10 +116,10 @@ public class APIExampleController {
 	) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO> callback = futureCredentials -> {
+		Supplier<ResponseServiceDTO> callback = () -> {
 			LOGGER.info("\tEmpieza servicio actualizar tipo usuario");
 			ResponseServiceDTO responseDTO = new ResponseServiceDTO();
-			responseDTO = exampleService.executeUpdateTypeUserByIdService(futureCredentials, typeUser, idUser);
+			responseDTO = exampleService.executeUpdateTypeUserByIdService(typeUser, idUser);
 			return responseDTO;
 		};	
 		
@@ -135,10 +133,10 @@ public class APIExampleController {
 	) {
 		String method = new Object(){}.getClass().getEnclosingMethod().getName();
 		
-		Function<CompletableFuture<ResponseServiceDTO>, ResponseServiceDTO> callback = futureCredentials -> {
+		Supplier<ResponseServiceDTO> callback = () -> {
 			LOGGER.info("\tEmpieza servicio eliminar usuario");
 			ResponseServiceDTO responseDTO = new ResponseServiceDTO();
-			responseDTO = exampleService.executeDeleteUserByIdService(futureCredentials, idUser);
+			responseDTO = exampleService.executeDeleteUserByIdService(idUser);
 			return responseDTO;
 		};
 		

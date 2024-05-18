@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.sssolutions.bmx.APIGenericaBMX.values.Properties;
 import com.sssolutions.bmx.RepositoryBMX.DaoBMX;
+import com.sssolutions.bmx.RepositoryBMX.DataSourceProvider;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
@@ -36,6 +37,11 @@ public class DataSourceConfig {
 	@Bean
 	DaoBMX getDaoBMX() {
 		return new DaoBMX();
+	}
+	
+	@Bean
+	DataSourceProvider getDataSourcesBMX() {
+		return new DataSourceProvider();
 	}
 	
 }

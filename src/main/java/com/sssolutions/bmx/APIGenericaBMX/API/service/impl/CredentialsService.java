@@ -29,7 +29,6 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class CredentialsService implements ICredentialsService {
-	
 	private static final Logger LOGGER = LogManager.getLogger(CredentialsService.class);
 	private ICredencialesApiBdRepository credencialesAPIBdRepository;
 	private PropertyConfig property;
