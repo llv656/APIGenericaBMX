@@ -72,14 +72,19 @@ public class APIService {
 		int servicioId = 0;
 
 		try {
-			switch (endpoint) {
-				case "POST-/BMX/apigenerica/user_example" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_ADD_USER);
-				case "getUsersController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USERS);
-				case "getUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USER);
-				case "updateUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_USER);
-				case "updateTypeUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_TYPE_USER);
-				case "deleteUserController" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_DELETE_USER);
-			};
+			if (endpoint.matches("GET-/BMX/apigenerica/user_example/.*"))
+				servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USER);
+			else if (endpoint.matches("PUT-/BMX/apigenerica/user_example/.*"))
+				servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_USER);
+			else if (endpoint.matches("DELETE-/BMX/apigenerica/user_example/.*"))
+				servicioId = property.getPropertyInteger(Properties.ENDPOINT_DELETE_USER);
+			else if (endpoint.matches("DELETE-/BMX/apigenerica/user_example/tipo_usuario/.*"))
+				servicioId = property.getPropertyInteger(Properties.ENDPOINT_UPDATE_TYPE_USER);
+			else
+				switch (endpoint) {
+					case "POST-/BMX/apigenerica/user_example" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_ADD_USER);
+					case "GET-/BMX/apigenerica/user_example" -> servicioId = property.getPropertyInteger(Properties.ENDPOINT_GET_USERS);
+				};
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 		}
