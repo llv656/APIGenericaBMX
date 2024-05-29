@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-/*{CHANGE_ARTEFACT}
- * 
- * */
 @Configuration
 @PropertySource(value = "file:${BMX_ENVIRONMENT}/APIGenericaBMX.properties", ignoreResourceNotFound = false)
 public class PropertyConfig {

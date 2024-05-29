@@ -11,8 +11,8 @@ public final class Properties {
 	/*API PROPERTIES*/
 	public final static String CRYPTO_KEY_SEPARATOR = "crypto.key.separator";
 	
-	public final static String DEFAULT_SIZE_PAGE = "repository.page.size";
-	public final static String DEFAULT_NUMBER_PAGE = "repository.page.number";
+	public final static String DEFAULT_PAGE_SIZE = "repository.page.size";
+	public final static String DEFAULT_PAGE_NUMBER = "repository.page.number";
 	public final static String DEFAULT_ORDER = "repository.page.order";
 	
 	public final static String API = "api.id";
