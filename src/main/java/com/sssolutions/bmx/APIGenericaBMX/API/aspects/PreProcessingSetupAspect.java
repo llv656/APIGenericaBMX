@@ -49,14 +49,12 @@ public class PreProcessingSetupAspect {
     	this.bdService = bdService;
     }
     
-    //{CHANGE_ARTEFACT}
     @Before("execution(* com.sssolutions.bmx.APIGenericaBMX.API.validation.*.*(..))")
     public void beforeValidator(JoinPoint joinPoint) {
     	beforeControllerExecute(joinPoint);
     	wasExecute.set(true);
     }
     
-    //{CHANGE_ARTEFACT}
     @Before("execution(* com.sssolutions.bmx.APIGenericaBMX.API.controller.*.*(..))")
     public void beforeControllerExecute(JoinPoint joinPoint) {
     	if (!wasExecute.get()) {
@@ -92,7 +90,6 @@ public class PreProcessingSetupAspect {
     	}
     }
     
-    //{CHANGE_ARTEFACT}
     @After("execution(* com.sssolutions.bmx.APIGenericaBMX.API.controller.*.*(..))")
     public void afterControllerExecute() {
     	jdbcTemplate_PLSSS.remove();
