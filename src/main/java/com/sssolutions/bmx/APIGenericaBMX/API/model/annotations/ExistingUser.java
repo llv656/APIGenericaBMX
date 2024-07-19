@@ -1,10 +1,12 @@
-package com.sssolutions.bmx.APIGenericaBMX.API.validation;
+package com.sssolutions.bmx.APIGenericaBMX.API.model.annotations;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import com.sssolutions.bmx.APIGenericaBMX.API.model.validator.ExistingUserValidator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

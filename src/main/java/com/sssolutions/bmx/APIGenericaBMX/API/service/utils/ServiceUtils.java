@@ -25,19 +25,23 @@ public class ServiceUtils {
 		ResponseDaoDTO responseDAO = c.get();
 
 		LOGGER.info("\t\tConstrucción de respuesta del servicio");
-		if (responseDAO.isValid()) {
+		if (responseDAO.isValid() && responseDAO.getDaoStatus() == DAOStatus.successful) {
 			responseDTO.setMessage(Messages.OK_001);
 			responseDTO.setResult(responseDAO.getResult());
 			responseDTO.setHttpStatus(hs);
-		} else if (!responseDAO.isValid() && responseDAO.getDaoStatus() == DAOStatus.err_execution) {
+		} else if (responseDAO.isValid() && responseDAO.getDaoStatus() == DAOStatus.partially_successful) {
+			responseDTO.setMessage(Messages.PARTIALLY_OK_001);
+			responseDTO.setDetails(responseDAO.getMessage());
+			responseDTO.setHttpStatus(hs);
+		} else if (responseDAO.getDaoStatus() == DAOStatus.err_execution) {
 			responseDTO.setMessage(Messages.ERROR_001);
 			responseDTO.setDetails(responseDAO.getMessage());
 			responseDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
-		} else if (!responseDAO.isValid() && responseDAO.getDaoStatus() == DAOStatus.err_permissions) {
+		} else if (responseDAO.getDaoStatus() == DAOStatus.err_permissions) {
 			responseDTO.setMessage(Messages.ERROR_CONNECTION_BD_001);
 			responseDTO.setDetails(responseDAO.getMessage());
 			responseDTO.setHttpStatus(HttpStatus.UNAUTHORIZED);
-		} else if (!responseDAO.isValid() && responseDAO.getDaoStatus() == DAOStatus.err_connection) {
+		} else if (responseDAO.getDaoStatus() == DAOStatus.err_connection) {
 			responseDTO.setMessage(Messages.ERROR_CONNECTION_BD_001);
 			responseDTO.setDetails(responseDAO.getMessage());
 			responseDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);

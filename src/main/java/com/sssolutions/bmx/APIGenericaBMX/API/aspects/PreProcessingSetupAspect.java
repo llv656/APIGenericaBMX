@@ -13,7 +13,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.APIService;
+import com.sssolutions.bmx.APIGenericaBMX.API.controller.utils.APIUtils;
 import com.sssolutions.bmx.APIGenericaBMX.API.model.APIModel;
 import com.sssolutions.bmx.APIGenericaBMX.API.service.ICredentialsService;
 import com.sssolutions.bmx.RepositoryBMX.DaoBMX;
@@ -27,7 +27,7 @@ public class PreProcessingSetupAspect {
 	private static final Logger LOGGER = LogManager.getLogger(PreProcessingSetupAspect.class);
 	
 	private HttpServletRequest request;
-	private APIService apiService;
+	private APIUtils apiService;
 	private ICredentialsService credentialsService;
 	private DaoBMX bdService;
 	
@@ -40,7 +40,7 @@ public class PreProcessingSetupAspect {
     
     public PreProcessingSetupAspect(
     		HttpServletRequest request,
-    		APIService apiService,
+    		APIUtils apiService,
     		ICredentialsService credentialsService,
     		DaoBMX bdService) {
     	this.request = request;
@@ -49,7 +49,7 @@ public class PreProcessingSetupAspect {
     	this.bdService = bdService;
     }
     
-    @Before("execution(* com.sssolutions.bmx.APIGenericaBMX.API.validation.*.*(..))")
+    @Before("execution(* com.sssolutions.bmx.APIGenericaBMX.API.model.validator.*.*(..))")
     public void beforeValidator(JoinPoint joinPoint) {
     	beforeControllerExecute(joinPoint);
     	wasExecute.set(true);

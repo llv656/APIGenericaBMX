@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sssolutions.bmx.APIGenericaBMX.API.validation.ExistingUser;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.annotations.ExistingUser;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

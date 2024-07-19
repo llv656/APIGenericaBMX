@@ -25,8 +25,8 @@ import lombok.AllArgsConstructor;
  */
 @Component
 @AllArgsConstructor
-public class APIService {
-	private static final Logger LOGGER = LogManager.getLogger(APIService.class);
+public class APIUtils {
+	private static final Logger LOGGER = LogManager.getLogger(APIUtils.class);
 
 	private PropertyConfig property;
 

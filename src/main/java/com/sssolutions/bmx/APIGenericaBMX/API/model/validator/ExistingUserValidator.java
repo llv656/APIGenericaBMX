@@ -1,6 +1,7 @@
-package com.sssolutions.bmx.APIGenericaBMX.API.validation;
+package com.sssolutions.bmx.APIGenericaBMX.API.model.validator;
 
 import com.sssolutions.bmx.APIGenericaBMX.API.model.RequestAddUserExampleModel;
+import com.sssolutions.bmx.APIGenericaBMX.API.model.annotations.ExistingUser;
 import com.sssolutions.bmx.APIGenericaBMX.BD.dao.IUserExampleRepository;
 
 import jakarta.validation.ConstraintValidator;

@@ -14,7 +14,7 @@ import com.sssolutions.bmx.dto.ResponseAPIOkWhitDataDTO;
  * @version 1.0.0
  */
 @Component
-public class ResponseService {
+public class ResponseUtils {
 	
 	/**
 	 * Builds a response object for a successful API request without data.

@@ -32,7 +32,7 @@ import lombok.AllArgsConstructor;
 public class EndpointUtils {
 	
 	private static final Logger LOGGER = LogManager.getLogger(EndpointUtils.class);
-	private ResponseService responseService;
+	private ResponseUtils responseService;
 
 	/**
 	 * Represents an implementation of the Endpoint interface.
@@ -53,13 +53,17 @@ public class EndpointUtils {
 		ResponseServiceDTO responseDTO = callback.get();
 		
 		LOGGER.info("\tConstrucción de respuesta: ".concat(method));
-		Object response = responseDTO.isValid()
-				? !method.startsWith("get") 
-					? responseService.buildResponseOK(
-							propertiesRequest.join().getFolio(), responseDTO.getMessage())
-					: responseService.buildResponseOkWhitData(
-							propertiesRequest.join().getFolio(), responseDTO.getMessage(), responseDTO.getResult())
-				: responseService.buildResponseError(
+		Object response = 
+				responseDTO.isValid()
+					? method.startsWith("get") 
+						? responseService.buildResponseOkWhitData(
+								propertiesRequest.join().getFolio(), responseDTO.getMessage(), responseDTO.getResult())
+						: method.startsWith("delete")
+							? responseService.buildResponseDelete(
+									propertiesRequest.join().getFolio(), responseDTO.getMessage(), responseDTO.getDetails())
+							: responseService.buildResponseOK(
+								propertiesRequest.join().getFolio(), responseDTO.getMessage())
+					: responseService.buildResponseError(
 						responseDTO.getHttpStatus().toString(), propertiesRequest.join().getFolio(), responseDTO.getMessage(), responseDTO.getDetails());
 		
 		LOGGER.info("**Termina solicitud ".concat(method));

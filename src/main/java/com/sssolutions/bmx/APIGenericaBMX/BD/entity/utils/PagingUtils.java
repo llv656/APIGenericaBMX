@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class PagingUtils {
 	
-	private PropertyConfig property;
+private PropertyConfig property;
 	
 	/**
 	 * configure data pagination.
@@ -32,16 +32,18 @@ public class PagingUtils {
 	 * @param pS	The PagingSettingsModel to build the paging settings.
 	 * @return		The PagingModel containing the response.
 	 */
-	public BiFunction<Integer, PagingSettingsModel, PagingModel> config = ((tR, pS) -> {
+	public final BiFunction<Integer, PagingSettingsModel, PagingModel> config = ((tR, pS) -> {
 		PagingModel paging = new PagingModel();
 		
-		int pageSize = pS.getPageSize() == 0 
-				? property.getPropertyInteger(Properties.DEFAULT_PAGE_SIZE) : pS.getPageSize();
+		int pageSize = pS.getPageSize() == null || pS.getPageSize() <= 0 
+				? property.getPropertyInteger(Properties.DEFAULT_PAGE_SIZE) 
+				: pS.getPageSize();
 		
-		int pageNumber = pS.getPageNumber() == 0
-				? property.getPropertyInteger(Properties.DEFAULT_PAGE_NUMBER) : pS.getPageNumber();
-		
-		int totalPages = BigDecimal.valueOf(tR / pageSize).setScale(0, RoundingMode.CEILING).intValue();
+		int pageNumber = pS.getPageNumber() == null || pS.getPageNumber() <= 0
+				? property.getPropertyInteger(Properties.DEFAULT_PAGE_NUMBER) 
+				: pS.getPageNumber();
+
+		int totalPages = BigDecimal.valueOf((double)tR / pageSize).setScale(0, RoundingMode.UP).intValue();
 		
 		paging.setItemsPage(pageSize);
 		paging.setActualPage(pageNumber);

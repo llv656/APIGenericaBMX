@@ -3,6 +3,7 @@ package com.sssolutions.bmx.APIGenericaBMX.values;
 public final class Messages {
 	
 	public final static String OK_001 = "Operación exitosa";
+	public final static String PARTIALLY_OK_001 = "Operación parcialmente exitosa";
 	
 	public final static String ERROR_001 = "Operación inválida";
 	public final static String ERROR_CONNECTION_BD_001 = "Ocurrio un error con la conexión al servidor de BD";
